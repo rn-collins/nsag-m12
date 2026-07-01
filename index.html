@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M12 Readiness Assessment — Nervous-System-Aware Education Systems | NSAG</title>
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Syne:wght@400;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --nsag: #4D45A8;
+    --accent: #2E5A28;
+    --accent-pale: rgba(46,90,40,0.08);
+    --bg: #F6F3EC;
+    --white: #FFFFFF;
+    --text: #1C1B1F;
+    --text-muted: #6B6770;
+    --border: #E2DDD6;
+  }
+  body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  
+  /* NAV */
+  nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .nav-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--nsag); letter-spacing: 0.06em; text-decoration: none; }
+  .nav-mod { font-family: 'Syne', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+
+  /* HERO */
+  .hero { background: var(--nsag); color: white; padding: 3rem 2rem; text-align: center; }
+  .hero-label { font-family: 'Syne', sans-serif; font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.75rem; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 600; margin-bottom: 1rem; line-height: 1.2; }
+  .hero-meta { font-size: 0.82rem; opacity: 0.75; letter-spacing: 0.03em; }
+  .hero-problem { max-width: 680px; margin: 1.5rem auto 0; font-size: 0.95rem; line-height: 1.8; opacity: 0.88; }
+
+  /* PROGRESS */
+  .progress-wrap { background: var(--white); border-bottom: 1px solid var(--border); padding: 0.75rem 2rem; position: sticky; top: 61px; z-index: 90; }
+  .progress-bar-bg { background: var(--border); border-radius: 3px; height: 4px; max-width: 700px; margin: 0 auto; }
+  .progress-bar { background: var(--accent); height: 4px; border-radius: 3px; transition: width 0.3s ease; width: 0%; }
+  .progress-text { font-family: 'Syne', sans-serif; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--text-muted); text-align: center; margin-top: 0.4rem; }
+
+  /* ASSESSMENT */
+  .container { max-width: 700px; margin: 0 auto; padding: 0 2rem; }
+  .assessment-wrap { padding: 2rem 0 4rem; }
+  .q-block { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 1.75rem; margin-bottom: 1.25rem; display: none; }
+  .q-block.active { display: block; }
+  .q-num { font-family: 'Syne', sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.3rem; }
+  .q-dim { font-family: 'Syne', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.75rem; }
+  .q-text { font-family: 'Manrope', sans-serif; font-size: 1rem; line-height: 1.7; color: var(--text); margin-bottom: 1.25rem; }
+  .q-options { display: flex; flex-direction: column; gap: 0.5rem; }
+  .q-opt { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.9rem; border: 1px solid var(--border); border-radius: 5px; cursor: pointer; transition: all 0.15s; font-size: 0.88rem; }
+  .q-opt:hover { border-color: var(--accent); background: var(--accent-pale); }
+  .q-opt input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+  .q-opt.selected { border-color: var(--accent); background: var(--accent-pale); font-weight: 600; }
+  .q-nav { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+  .btn-prev { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: 'Syne', sans-serif; font-size: 0.8rem; padding: 0.6rem 1.25rem; border-radius: 4px; cursor: pointer; }
+  .btn-next { background: var(--accent); border: none; color: white; font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.6rem 1.5rem; border-radius: 4px; cursor: pointer; flex: 1; }
+  .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* EMAIL GATE */
+  .gate { display: none; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 2.5rem; text-align: center; margin-top: 2rem; }
+  .gate.active { display: block; }
+  .gate-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .gate-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+  .gate-input { width: 100%; border: 1px solid var(--border); border-radius: 5px; padding: 0.75rem 1rem; font-family: 'Manrope', sans-serif; font-size: 0.95rem; margin-bottom: 0.75rem; }
+  .gate-btn { width: 100%; background: var(--nsag); color: white; border: none; border-radius: 5px; padding: 0.85rem; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.9rem; cursor: pointer; letter-spacing: 0.05em; }
+
+  /* RESULTS */
+  .results { display: none; }
+  .results.active { display: block; }
+  .tier-banner { border-radius: 8px; padding: 2.5rem; text-align: center; margin-bottom: 2rem; color: white; }
+  .tier-label { font-family: 'Syne', sans-serif; font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.8; margin-bottom: 0.5rem; }
+  .tier-name { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .tier-score { font-size: 0.9rem; opacity: 0.85; }
+  .dims-section { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem; }
+  .dims-title { font-family: 'Syne', sans-serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.25rem; }
+  .dim-row { display: grid; grid-template-columns: 160px 1fr 50px; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem; }
+  .dim-label { font-size: 0.8rem; color: var(--text); font-weight: 500; }
+  .dim-bar-wrap { background: var(--border); border-radius: 3px; height: 6px; overflow: hidden; }
+  .dim-bar { height: 6px; border-radius: 3px; transition: width 0.8s ease; width: 0%; }
+  .dim-score { font-family: 'Syne', sans-serif; font-size: 0.72rem; color: var(--text-muted); text-align: right; }
+  .rec-section { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem; }
+  .rec-title { font-family: 'Syne', sans-serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .rec-text { font-size: 0.92rem; line-height: 1.8; color: var(--text); }
+  .cta-block { text-align: center; padding: 2rem; background: var(--nsag); border-radius: 8px; color: white; margin-bottom: 1.5rem; }
+  .cta-block h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .cta-block p { font-size: 0.88rem; opacity: 0.85; margin-bottom: 1.25rem; }
+  .cta-btn { display: inline-block; background: white; color: var(--nsag); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; padding: 0.75rem 2rem; border-radius: 4px; text-decoration: none; }
+  .copy-btn { display: block; margin: 1rem auto 0; background: none; border: 1px solid rgba(255,255,255,0.4); color: white; font-family: 'Syne', sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; padding: 0.4rem 1rem; border-radius: 3px; cursor: pointer; }
+
+  /* FOOTER */
+  footer { background: #2A2730; color: rgba(255,255,255,0.7); text-align: center; padding: 1.5rem; font-size: 0.78rem; }
+  footer a { color: rgba(255,255,255,0.9); }
+  @media (max-width: 600px) {
+    .dim-row { grid-template-columns: 1fr 80px; }
+    .dim-label { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="https://nsag-site.vercel.app">NSAG</a>
+  <span class="nav-mod">M12 · Nervous-System-Aware Education Systems</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">Free Readiness Assessment</div>
+  <h1 class="hero-title">Nervous-System-Aware Education Systems</h1>
+  <div class="hero-meta">12 questions &nbsp;·&nbsp; 6 dimensions &nbsp;·&nbsp; 8–10 minutes</div>
+  <p class="hero-problem">Professional training programs in medicine, nursing, law, and pharmacy are designed around content coverage and accreditation compliance — not around the physiological and psychological conditions under which professionals actually form judgment. The chronic stress conditions endemic to these programs impair the precise cognitive outcomes they intend to produce.</p>
+</div>
+
+<div class="progress-wrap" id="progress-wrap" style="display:none">
+  <div class="progress-bar-bg"><div class="progress-bar" id="progress-bar"></div></div>
+  <div class="progress-text" id="progress-text">Question 1 of 12</div>
+</div>
+
+<div class="container">
+  <div class="assessment-wrap">
+
+    <!-- INTRO -->
+    <div id="intro-card" style="background:var(--white);border:1px solid var(--border);border-radius:8px;padding:2rem;margin-bottom:1.25rem;text-align:center;">
+      <p style="font-size:0.92rem;line-height:1.8;color:var(--text-muted);margin-bottom:1.5rem;">This assessment scores your organization across six dimensions of nervous-system-aware education systems. Each question uses a five-point scale. Your tier report is generated immediately after you submit your email — no waiting, no sales call required.</p>
+      <p style="font-family:'Syne',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem;">For: Medical schools · Nursing programs (BSN–DNP) · Law schools · Pharmacy programs · CME and CLE providers</p>
+      <button onclick="startAssessment()" style="background:var(--accent);color:white;border:none;border-radius:4px;padding:0.85rem 2.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;letter-spacing:0.05em;">Begin Assessment →</button>
+    </div>
+
+    <!-- QUESTIONS -->
+    
+        <div class="q-block" id="q1">
+          <div class="q-num">Q1 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Curriculum Stress Architecture</div>
+          <p class="q-text">Has your program conducted a formal audit of cumulative assessment load across a single academic term — including total required hours, deadline clustering, and evaluation density?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q1" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q1" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q1" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q1" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q1" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q2">
+          <div class="q-num">Q2 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Curriculum Stress Architecture</div>
+          <p class="q-text">Does your curriculum explicitly protect time for integration, reflection, and consolidation — as distinct from content delivery and graded evaluation?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q2" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q2" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q2" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q2" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q2" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q3">
+          <div class="q-num">Q3 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Psychological Safety Infrastructure</div>
+          <p class="q-text">Does your program have a mechanism for learners to report environmental or relational safety concerns that is separate from academic grievance and disciplinary processes?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q3" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q3" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q3" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q3" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q3" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q4">
+          <div class="q-num">Q4 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Psychological Safety Infrastructure</div>
+          <p class="q-text">Have faculty in your program received training on the distinction between productive challenge — which promotes learning — and threat activation — which impairs it?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q4" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q4" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q4" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q4" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q4" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q5">
+          <div class="q-num">Q5 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Trauma-Informed Pedagogy</div>
+          <p class="q-text">Do faculty in your program receive training on how trauma history affects professional training — including hypervigilance, dissociation, and impaired judgment formation under perceived threat?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q5" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q5" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q5" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q5" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q5" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q6">
+          <div class="q-num">Q6 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Trauma-Informed Pedagogy</div>
+          <p class="q-text">Does your program have a formal policy for modifying academic requirements or clinical scheduling for learners who present with acute stress-related impairment?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q6" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q6" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q6" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q6" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q6" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q7">
+          <div class="q-num">Q7 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Sleep & Physiological Readiness</div>
+          <p class="q-text">Does your program formally acknowledge and design around the relationship between schedule design — shift length, call schedules, early start times — and cognitive performance in clinical or professional settings?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q7" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q7" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q7" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q7" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q7" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q8">
+          <div class="q-num">Q8 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Sleep & Physiological Readiness</div>
+          <p class="q-text">Has your program modified evaluation timing or scheduling based on evidence about sleep-dependent memory consolidation and its effect on high-stakes assessment performance?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q8" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q8" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q8" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q8" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q8" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q9">
+          <div class="q-num">Q9 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Professional Identity Formation</div>
+          <p class="q-text">Does your program have an explicit, structured curriculum component devoted to professional identity formation — separate from accreditation requirements or professionalism grades?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q9" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q9" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q9" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q9" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q9" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q10">
+          <div class="q-num">Q10 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Professional Identity Formation</div>
+          <p class="q-text">Are learners supported in developing an explicit professional self-concept — including values, scope, and identity under stress — before or concurrent with clinical or professional placement?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q10" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q10" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q10" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q10" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q10" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q11">
+          <div class="q-num">Q11 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Technology Integration Standards</div>
+          <p class="q-text">Does your program have a published, evidence-based standard for when and how AI tools may be used in learning, assessment, and clinical decision support — not just a policy permitting or prohibiting use?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q11" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q11" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q11" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q11" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q11" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+        <div class="q-block" id="q12">
+          <div class="q-num">Q12 of 12</div>
+          <div class="q-dim" style="color:#2E5A28">Technology Integration Standards</div>
+          <p class="q-text">Has your program assessed how AI tool use affects the formation of clinical or professional judgment — particularly in early-stage learners whose decision-making frameworks are still being constructed?</p>
+          <div class="q-options">
+            <label class="q-opt"><input type="radio" name="q12" value="0"> <span>Not in place</span></label>
+            <label class="q-opt"><input type="radio" name="q12" value="1"> <span>Rarely / minimal</span></label>
+            <label class="q-opt"><input type="radio" name="q12" value="2"> <span>Partially in place</span></label>
+            <label class="q-opt"><input type="radio" name="q12" value="3"> <span>Mostly in place</span></label>
+            <label class="q-opt"><input type="radio" name="q12" value="4"> <span>Fully in place</span></label>
+          </div>
+        </div>
+
+    <!-- EMAIL GATE -->
+    <div class="gate" id="gate">
+      <div class="gate-title">Your results are ready.</div>
+      <p class="gate-sub">Enter your organization email to receive your tier report and dimension scores. Your answers are not stored until you submit.</p>
+      <input type="email" class="gate-input" id="gate-email" placeholder="you@organization.com">
+      <button class="gate-btn" onclick="submitGate()">See My Results →</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results" id="results">
+      <div class="tier-banner" id="tier-banner">
+        <div class="tier-label">Your Readiness Tier</div>
+        <div class="tier-name" id="tier-name">—</div>
+        <div class="tier-score" id="tier-score">—</div>
+      </div>
+
+      <div class="dims-section">
+        <div class="dims-title">Dimension Scores</div>
+        
+            <div class="dim-row">
+              <div class="dim-label">Curriculum Stress Architecture</div>
+              <div class="dim-bar-wrap"><div class="dim-bar" id="bar-0" style="background:#2E5A28"></div></div>
+              <div class="dim-score" id="score-0">—</div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Psychological Safety Infrastructure</div>
+              <div class="dim-bar-wrap"><div class="dim-bar" id="bar-1" style="background:#2E5A28"></div></div>
+              <div class="dim-score" id="score-1">—</div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Trauma-Informed Pedagogy</div>
+              <div class="dim-bar-wrap"><div class="dim-bar" id="bar-2" style="background:#2E5A28"></div></div>
+              <div class="dim-score" id="score-2">—</div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Sleep & Physiological Readiness</div>
+              <div class="dim-bar-wrap"><div class="dim-bar" id="bar-3" style="background:#2E5A28"></div></div>
+              <div class="dim-score" id="score-3">—</div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Professional Identity Formation</div>
+              <div class="dim-bar-wrap"><div class="dim-bar" id="bar-4" style="background:#2E5A28"></div></div>
+              <div class="dim-score" id="score-4">—</div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Technology Integration Standards</div>
+              <div class="dim-bar-wrap"><div class="dim-bar" id="bar-5" style="background:#2E5A28"></div></div>
+              <div class="dim-score" id="score-5">—</div>
+            </div>
+      </div>
+
+      <div class="rec-section">
+        <div class="rec-title">Your Priority Recommendations</div>
+        <p class="rec-text" id="rec-text">—</p>
+      </div>
+
+      <div class="cta-block">
+        <h3>Ready to go deeper?</h3>
+        <p>A 20-minute discovery call covers your highest-priority dimension and what a full advisory engagement would address.</p>
+        <a class="cta-btn" href="https://outlook.office.com/bookwithme/user/3ff7c8299177431a8fc2b099238c5e43@northeastern.edu?anonymous&ismsaljsauthenabled&ep=plink" target="_blank" rel="noopener noreferrer">Book a Discovery Call</a>
+        <button class="copy-btn" onclick="copyResults()">Copy Results to Clipboard</button>
+      </div>
+
+      <p style="text-align:center;font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;">
+        <a href="https://nsag-site.vercel.app" style="color:var(--nsag);">← Return to NSAG</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p>NSAG · Nervous-System-Aware Governance · Honolulu, Hawaiʻi</p>
+  <p style="margin-top:0.3rem;"><a href="https://nsag-site.vercel.app">nsag-site.vercel.app</a> &nbsp;·&nbsp; <a href="mailto:collins.ra@northeastern.edu">Contact the Architect</a></p>
+</footer>
+
+<script>
+var answers = {};
+var current = 0;
+var total = 12;
+var dimMap = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
+var numDims = 6;
+var userEmail = '';
+
+function startAssessment() {
+  document.getElementById('intro-card').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'block';
+  showQuestion(0);
+}
+
+function showQuestion(idx) {
+  document.querySelectorAll('.q-block').forEach(function(el) { el.classList.remove('active'); });
+  var el = document.getElementById('q' + (idx+1));
+  if (!el) return;
+  el.classList.add('active');
+  
+  // Rebuild nav buttons
+  var existing = el.querySelector('.q-nav');
+  if (existing) existing.remove();
+  var nav = document.createElement('div');
+  nav.className = 'q-nav';
+  if (idx > 0) {
+    var prev = document.createElement('button');
+    prev.className = 'btn-prev';
+    prev.textContent = '← Back';
+    prev.onclick = function() { showQuestion(idx - 1); };
+    nav.appendChild(prev);
+  }
+  var next = document.createElement('button');
+  next.className = 'btn-next';
+  next.textContent = idx === total - 1 ? 'See Results →' : 'Next →';
+  next.disabled = answers[idx] === undefined;
+  next.onclick = function() {
+    if (answers[idx] === undefined) return;
+    if (idx === total - 1) { showGate(); } else { showQuestion(idx + 1); }
+  };
+  nav.appendChild(next);
+  el.appendChild(nav);
+  
+  // Radio change listener
+  el.querySelectorAll('input[type=radio]').forEach(function(r) {
+    r.onchange = function() {
+      answers[idx] = parseInt(this.value);
+      el.querySelectorAll('.q-opt').forEach(function(o) { o.classList.remove('selected'); });
+      this.closest('.q-opt').classList.add('selected');
+      next.disabled = false;
+    };
+    if (answers[idx] !== undefined && parseInt(r.value) === answers[idx]) {
+      r.checked = true;
+      r.closest('.q-opt').classList.add('selected');
+    }
+  });
+  
+  // Progress
+  var pct = Math.round((idx / total) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = 'Question ' + (idx + 1) + ' of ' + total;
+  current = idx;
+}
+
+function showGate() {
+  document.querySelectorAll('.q-block').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('progress-text').textContent = 'Assessment complete';
+  document.getElementById('gate').classList.add('active');
+}
+
+function submitGate() {
+  var email = document.getElementById('gate-email').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('gate-email').focus();
+    return;
+  }
+  userEmail = email;
+  fetch('https://nsag-api.vercel.app/api/lead', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({email: email, source: 'm12_assessment', module: 'm12'})
+  }).then(function() { showResults(); }).catch(function() { showResults(); });
+}
+
+function showResults() {
+  document.getElementById('gate').classList.remove('active');
+  document.getElementById('results').classList.add('active');
+  
+  // Calculate scores
+  var dimScores = new Array(numDims).fill(0);
+  var dimCounts = new Array(numDims).fill(0);
+  for (var i = 0; i < total; i++) {
+    var val = answers[i] !== undefined ? answers[i] : 0;
+    dimScores[dimMap[i]] += val;
+    dimCounts[dimMap[i]]++;
+  }
+  
+  var totalScore = 0;
+  for (var i = 0; i < total; i++) { totalScore += (answers[i] !== undefined ? answers[i] : 0); }
+  var maxScore = total * 4;
+  var pct = Math.round((totalScore / maxScore) * 100);
+  
+  // Determine tier
+  var tier, tierColor, tierRec;
+  if (pct >= 80) {
+    tier = 'PIONEERING'; tierColor = '#2E5A28';
+    tierRec = 'Your program is designing for the physiological and psychological conditions that make learning possible — not just for content coverage and accreditation compliance. You are doing what most programs claim to do but few actually implement. Priority: document your curriculum design standards formally, contribute to accreditation reform conversations, and develop faculty development materials that can be shared across your institution.';
+  } else if (pct >= 55) {
+    tier = 'EMERGING'; tierColor = '#1B7A68';
+    tierRec = 'Your program has taken meaningful steps toward learning environment design but these efforts are not yet systemic — they exist in specific courses or with specific faculty rather than as program-level infrastructure. Priority: conduct a full curriculum stress audit, establish a formal psychological safety reporting channel, and develop a consistent faculty training protocol on threat versus challenge in learning.';
+  } else if (pct >= 35) {
+    tier = 'DEVELOPING'; tierColor = '#B8842A';
+    tierRec = 'Your program addresses learner wellbeing primarily through counseling referrals and wellness programming — without redesigning the structural conditions that generate chronic stress. Priority: conduct a deadline clustering audit, pilot a trauma-informed pedagogy workshop for core faculty, and create one structural modification to evaluation scheduling based on sleep and consolidation evidence.';
+  } else {
+    tier = 'EARLY STAGE'; tierColor = '#6B2937';
+    tierRec = 'Your program is producing the exact conditions known to impair the cognitive outcomes it claims to develop. The chronic stress architecture of the curriculum is working against its own educational goals. Priority: commission an immediate curriculum load audit, establish a learner feedback mechanism that is genuinely protected from faculty oversight, and develop a written policy position on professional identity formation.';
+  }
+  
+  document.getElementById('tier-banner').style.background = tierColor;
+  document.getElementById('tier-name').textContent = tier;
+  document.getElementById('tier-score').textContent = pct + '% overall · ' + totalScore + ' of ' + maxScore + ' points';
+  document.getElementById('rec-text').textContent = tierRec;
+  
+  // Dimension bars
+  var dimNames = ['Curriculum Stress Architecture', 'Psychological Safety Infrastructure', 'Trauma-Informed Pedagogy', 'Sleep & Physiological Readiness', 'Professional Identity Formation', 'Technology Integration Standards'];
+  for (var d = 0; d < numDims; d++) {
+    var dpct = dimCounts[d] > 0 ? Math.round((dimScores[d] / (dimCounts[d] * 4)) * 100) : 0;
+    var bar = document.getElementById('bar-' + d);
+    var score = document.getElementById('score-' + d);
+    if (bar) { setTimeout((function(b, p) { return function() { b.style.width = p + '%'; }; })(bar, dpct), 100); }
+    if (score) score.textContent = dpct + '%';
+  }
+}
+
+function copyResults() {
+  var dimNames = ['Curriculum Stress Architecture', 'Psychological Safety Infrastructure', 'Trauma-Informed Pedagogy', 'Sleep & Physiological Readiness', 'Professional Identity Formation', 'Technology Integration Standards'];
+  var dimScores = new Array(numDims).fill(0);
+  var dimCounts = new Array(numDims).fill(0);
+  for (var i = 0; i < total; i++) {
+    var val = answers[i] !== undefined ? answers[i] : 0;
+    dimScores[dimMap[i]] += val;
+    dimCounts[dimMap[i]]++;
+  }
+  var totalScore = 0;
+  for (var i = 0; i < total; i++) totalScore += (answers[i] !== undefined ? answers[i] : 0);
+  var pct = Math.round((totalScore / (total * 4)) * 100);
+  var tier = pct >= 80 ? 'PIONEERING' : pct >= 55 ? 'EMERGING' : pct >= 35 ? 'DEVELOPING' : 'EARLY STAGE';
+  
+  var text = 'NSAG M12 — Nervous-System-Aware Education Systems Readiness Assessment\n';
+  text += 'Overall: ' + pct + '% · ' + tier + '\n\n';
+  text += 'Dimension Scores:\n';
+  for (var d = 0; d < numDims; d++) {
+    var dpct = dimCounts[d] > 0 ? Math.round((dimScores[d] / (dimCounts[d] * 4)) * 100) : 0;
+    text += '  ' + dimNames[d] + ': ' + dpct + '%\n';
+  }
+  text += '\nnsag-site.vercel.app';
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.querySelector('.copy-btn');
+      btn.textContent = '✓ Copied';
+      setTimeout(function() { btn.textContent = 'Copy Results to Clipboard'; }, 2000);
+    });
+  }
+}
+</script>
+</body>
+</html>
