@@ -1,6 +1,6 @@
-# NSAG M12 — Public-Sector Assurance
+# NSAG M12 — Nervous-System-Aware Education Systems
 
-Retired NSAG prototype module covering Public-Sector Assurance.
+Retired standalone deployment of NSAG module M12, Nervous-System-Aware Education Systems (Civic & Built Environment). The module's canonical page is https://nsag-site.vercel.app/m12.
 
 **Live:** https://nsag-m12.vercel.app
 
@@ -10,7 +10,7 @@ This prototype has been retired. The deployment remains online as a record; it i
 
 ## Repository contents
 
-`index.html`, `vercel.json`
+`index.html`, `vercel.json`, `og.png`, `favicon.svg`, `apple-touch-icon.png`
 
 ## Local development
 
